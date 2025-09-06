@@ -10,6 +10,8 @@ class User(db.Model):
     password_hash = db.Column(db.String(120),nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC) )
 
+    messages = db.relationship("Message", backref="user", cascade="delete")
+
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)

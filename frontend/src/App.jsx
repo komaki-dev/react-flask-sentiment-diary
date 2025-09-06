@@ -10,7 +10,7 @@ function App() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  
+
   /* ログイン不具合後日修正
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -34,18 +34,39 @@ function App() {
   */
 
   const handleSend = async () => {
-    const res = await fetch("http://localhost:5000/message", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ message: messageInput }),
-    });
+    const currentMessage = messageInput;
     setMessageInput("");
+    try {
+      const res = await fetch("http://localhost:5000/message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: currentMessage }),
+      });
+      if (!res.ok) throw new Error("analyze failed");
 
-    const data = await res.json();
-    console.log("flaskから帰ってきた：", data);
-    setResult(data);
+      const data = await res.json();
+      console.log("flaskから帰ってきた：", data);
+      setResult(data);
+
+      const { summary, detail } = data;
+
+      const saveRes = await fetch("http://localhost:5000/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: 1,
+          message: currentMessage,
+          label: summary,
+          score: score,
+        }),
+      });
+      if (!saveRes.ok) throw new Error("save failed");
+    } catch (e) {
+      console.error(e);
+      setMessageInput(currentMessage);
+    }
   };
 
   return (
@@ -63,7 +84,6 @@ function App() {
           />
         }
       />*/}
-
       <Route
         path="/"
         element={
