@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 from flask import request, jsonify, Blueprint
-from models import db, Message
+from models import db, Message, User
 
 message_bp = Blueprint("message", __name__)
 
@@ -38,3 +38,19 @@ def post_message():
     summary = "positive" if pos_total >= neg_total else "negative"
     print(summary)
     return jsonify({"summary":summary, "detail": results})
+
+@message_bp.route("/add", methods=["POST"])
+def add_message():
+    data = request.get_json()
+
+    demo_user = User.query.filter_by(username="demo").first()
+
+    m = Message(
+        user_id=demo_user.id,
+        message=data["message"],
+        label=data.get("label"),
+        score=data.get("score"),
+    )
+    db.session.add(m)
+    db.session.commit()
+    return jsonify({"status": "saved", "id": m.id}),201

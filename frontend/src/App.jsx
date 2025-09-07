@@ -56,10 +56,9 @@ function App() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: 1,
           message: currentMessage,
           label: summary,
-          score: score,
+          score: detail.score,
         }),
       });
       if (!saveRes.ok) throw new Error("save failed");
