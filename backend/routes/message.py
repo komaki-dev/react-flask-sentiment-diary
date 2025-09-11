@@ -54,3 +54,22 @@ def add_message():
     db.session.add(m)
     db.session.commit()
     return jsonify({"status": "saved", "id": m.id}),201
+
+@message_bp.route("/read", methods=["GET"])
+def get_messages():
+    messages = Message.query.order_by(Message.created_at.desc()).all() #新しい順にする
+    message_list = [
+        {
+            "id": m.id,
+            "user_id": m.user_id,
+            "message": m.message,
+            "label": m.label,
+            "score": m.score,
+            "created_at": (
+                m.created_at.isoformat(sep=" ", timespec="seconds") #datetime を JSON に変換
+                if hasattr(m.created_at, "isoformat") else str(m.created_at)
+            ),
+        }
+        for m in messages
+    ]
+    return jsonify(message_list), 200

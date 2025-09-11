@@ -1,4 +1,4 @@
-const InputForm = ({ messageInput, setMessageInput, onSend }) => {
+const InputForm = ({ messageInput, setMessageInput, onSend, handleRead }) => {
   return (
     <div>
       <h1>ポジネガ判定日記</h1>
@@ -11,7 +11,8 @@ const InputForm = ({ messageInput, setMessageInput, onSend }) => {
         rows={5}
         cols={40}
       ></textarea>
-      <button onClick={onSend}>送信</button>
+      <button onClick={onSend}>送信</button><br /><br />
+      <button onClick={handleRead}>日記を読み返す</button>
     </div>
   );
 };

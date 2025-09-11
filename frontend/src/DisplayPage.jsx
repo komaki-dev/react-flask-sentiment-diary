@@ -1,5 +1,4 @@
 import InputForm from "./InputForm";
-
 import "./App.css";
 import ResultDisplay from "./ResultDisplay";
 import ResultChart from "./ResultChart";
@@ -12,15 +11,16 @@ const DisplayPage = ({
   result,
   chartType,
   setChartType,
+  handleRead,
 }) => {
   return (
     <div>
-      
       <div>
         <InputForm
           messageInput={messageInput}
           setMessageInput={setMessageInput}
           onSend={handleSend}
+          handleRead={handleRead}
         />
       </div>
 

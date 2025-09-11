@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import DisplayPage from "./DisplayPage";
+import MessageLog from "./MessageLog";
 
 function App() {
   const [messageInput, setMessageInput] = useState("");
   const [result, setResult] = useState(null);
+  const [log, setLog] = useState([]);
   const [chartType, setChartType] = useState("none");
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -34,8 +37,12 @@ function App() {
   */
 
   const handleSend = async () => {
+    if (loading) return;
+    if (!messageInput.trim()) return;
+
     const currentMessage = messageInput;
     setMessageInput("");
+    setLoading(true);
     try {
       const res = await fetch("http://localhost:5000/message", {
         method: "POST",
@@ -65,6 +72,24 @@ function App() {
     } catch (e) {
       console.error(e);
       setMessageInput(currentMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRead = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/read");
+      if (!res.ok) throw new Error("read failed");
+      const data = await res.json();
+      setLog(data);
+      navigate("/MessageLog");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,9 +118,11 @@ function App() {
             result={result}
             chartType={chartType}
             setChartType={setChartType}
+            handleRead={handleRead}
           />
         }
       />
+      <Route path="/MessageLog" element={<MessageLog log={log} />} />
       <Route path="*" element={<Navigate to="/" replace />} />{" "}
     </Routes>
   );
